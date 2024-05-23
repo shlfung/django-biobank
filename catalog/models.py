@@ -6,6 +6,19 @@ def get_default_user():
     return User.objects.get_or_create(username='admin')[0]
 
 # Create your models here.
+
+class Program(models.Model):
+    title = models.CharField(max_length=1000, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=get_default_user)
+
+    class Meta:
+        ordering = ['title']
+    
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.title
+
 class Participant(models.Model):
     """Model representing a participant"""
     first_name = models.CharField(max_length=1000)
@@ -14,9 +27,14 @@ class Participant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=get_default_user)
 
+    program = models.ManyToManyField(Program, help_text="Select a program for this participant")
+
     class Meta:
         ordering = ['last_name', 'first_name']
 
     def __str__(self):
         """String for representing the Model object."""
         return self.last_name + ", " + self.first_name
+    
+
+
